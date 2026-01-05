@@ -1,0 +1,411 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Track your gym workouts and plan your fitness journey">
+    <meta name="theme-color" content="#6366f1">
+    
+    <!-- PWA Meta Tags -->
+    <link rel="manifest" href="manifest.json">
+    <link rel="apple-touch-icon" href="icons/icon-192.png">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="Gym Plan">
+    
+    <title>Gym Plan - Workout Tracker</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <div class="app">
+        <!-- Header -->
+        <header class="header">
+            <h1>💪 Gym Plan</h1>
+            <div class="header-actions">
+                <button id="headerThemeBtn" class="icon-btn" title="Toggle Theme">🌙</button>
+                <button id="installBtn" class="install-btn hidden">Install</button>
+            </div>
+        </header>
+
+        <!-- Navigation -->
+        <nav class="nav">
+            <button class="nav-btn active" data-tab="warmup">🔥</button>
+            <button class="nav-btn" data-tab="workouts">🏋️</button>
+            <button class="nav-btn" data-tab="planner">📅</button>
+            <button class="nav-btn" data-tab="exercises">📚</button>
+            <button class="nav-btn" data-tab="progress">📊</button>
+            <button class="nav-btn" data-tab="settings">⚙️</button>
+        </nav>
+
+        <!-- Rest Timer Modal -->
+        <div id="restTimerModal" class="modal hidden">
+            <div class="modal-content rest-timer-modal">
+                <h3>⏱️ Rest Timer</h3>
+                <div class="rest-timer-display" id="restTimerDisplay">60</div>
+                <div class="rest-timer-buttons">
+                    <button class="rest-btn" data-time="30">30s</button>
+                    <button class="rest-btn active" data-time="60">60s</button>
+                    <button class="rest-btn" data-time="90">90s</button>
+                    <button class="rest-btn" data-time="120">2m</button>
+                </div>
+                <div class="rest-timer-controls">
+                    <button id="startRestTimer" class="primary-btn">▶️ Start</button>
+                    <button id="resetRestTimer" class="secondary-btn">🔄 Reset</button>
+                    <button id="skipRestTimer" class="secondary-btn">⏭️ Skip</button>
+                </div>
+                <button id="closeRestTimer" class="close-modal" style="position:absolute;top:10px;right:10px;">✕</button>
+                <p class="rest-tip" id="restTip">💡 Rest 60-90s for hypertrophy, 2-3min for strength</p>
+            </div>
+        </div>
+
+        <!-- Main Content -->
+        <main class="main">
+            <!-- Warm-up Tab -->
+            <section id="warmup" class="tab-content active">
+                <div class="section-header">
+                    <h2>🔥 Pre-Workout Warm-up</h2>
+                </div>
+
+                <div class="warmup-info">
+                    <p>Complete these stretches before your workout to prevent injury and improve performance.</p>
+                </div>
+
+                <div class="warmup-selector">
+                    <label for="warmupType">Select Routine:</label>
+                    <select id="warmupType">
+                        <option value="dynamic">Dynamic Warm-up (5-10 min)</option>
+                        <option value="upper">Upper Body Stretch</option>
+                        <option value="lower">Lower Body Stretch</option>
+                        <option value="full">Full Body Mobility</option>
+                        <option value="quick">Quick Warm-up (3 min)</option>
+                    </select>
+                </div>
+
+                <div class="warmup-timer">
+                    <div class="timer-display">
+                        <span id="timerMinutes">00</span>:<span id="timerSeconds">00</span>
+                    </div>
+                    <div class="timer-controls">
+                        <button id="startTimer" class="timer-btn">▶️ Start</button>
+                        <button id="pauseTimer" class="timer-btn hidden">⏸️ Pause</button>
+                        <button id="resetTimer" class="timer-btn">🔄 Reset</button>
+                    </div>
+                </div>
+
+                <div id="stretchList" class="stretch-list"></div>
+
+                <button id="completeWarmup" class="success-btn">✅ Complete Warm-up</button>
+            </section>
+
+            <!-- Workouts Tab -->
+            <section id="workouts" class="tab-content">
+                <div class="section-header">
+                    <h2>Today's Workout</h2>
+                    <span class="date" id="currentDate"></span>
+                </div>
+
+                <!-- Workout Duration Display -->
+                <div id="workoutDuration" class="workout-duration hidden">
+                    <span>⏱️</span>
+                    <span id="durationTime">0:00</span>
+                </div>
+
+                <!-- Muscle Recovery Status -->
+                <div id="muscleRecovery" class="muscle-recovery">
+                    <h4>💪 Muscle Status</h4>
+                    <div class="recovery-grid" id="recoveryGrid"></div>
+                </div>
+                
+                <div class="workout-selector">
+                    <label for="workoutType">Select Workout:</label>
+                    <select id="workoutType">
+                        <option value="push">Push Day (Chest, Shoulders, Triceps)</option>
+                        <option value="pull">Pull Day (Back, Biceps)</option>
+                        <option value="legs">Leg Day (Quads, Hamstrings, Calves)</option>
+                        <option value="upper">Upper Body</option>
+                        <option value="lower">Lower Body</option>
+                        <option value="fullbody">Full Body</option>
+                        <option value="custom">Custom Workout</option>
+                    </select>
+                </div>
+
+                <div id="exerciseList" class="exercise-list"></div>
+                
+                <button id="startWorkout" class="primary-btn">▶️ Start Workout</button>
+                <button id="finishWorkout" class="success-btn hidden">✅ Finish Workout</button>
+            </section>
+
+            <!-- Weekly Planner Tab -->
+            <section id="planner" class="tab-content">
+                <div class="section-header">
+                    <h2>📅 Weekly Planner</h2>
+                </div>
+
+                <div class="planner-week" id="plannerWeek"></div>
+
+                <div class="planner-tips" id="plannerTips">
+                    <h4>💡 Tips</h4>
+                    <p>Plan your week! Aim for 3-5 workout days with adequate rest.</p>
+                </div>
+            </section>
+
+            <!-- Exercises Tab -->
+            <section id="exercises" class="tab-content">
+                <div class="section-header">
+                    <h2>📚 Exercise Library</h2>
+                </div>
+                
+                <div class="search-box">
+                    <input type="text" id="exerciseSearch" placeholder="Search exercises...">
+                </div>
+
+                <div class="filter-chips">
+                    <button class="chip active" data-filter="all">All</button>
+                    <button class="chip" data-filter="chest">Chest</button>
+                    <button class="chip" data-filter="back">Back</button>
+                    <button class="chip" data-filter="shoulders">Shoulders</button>
+                    <button class="chip" data-filter="arms">Arms</button>
+                    <button class="chip" data-filter="legs">Legs</button>
+                    <button class="chip" data-filter="core">Core</button>
+                </div>
+
+                <div id="exerciseLibrary" class="exercise-library"></div>
+            </section>
+
+            <!-- Progress Tab -->
+            <section id="progress" class="tab-content">
+                <div class="section-header">
+                    <h2>📊 Your Progress</h2>
+                    <button id="exportData" class="icon-btn" title="Export Data">📤</button>
+                </div>
+
+                <!-- Achievement Badges -->
+                <div class="achievements-section">
+                    <h4>🏅 Achievements</h4>
+                    <div class="badges-grid" id="badgesGrid"></div>
+                </div>
+
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <span class="stat-value" id="totalWorkouts">0</span>
+                        <span class="stat-label">Workouts</span>
+                    </div>
+                    <div class="stat-card">
+                        <span class="stat-value" id="totalWarmups">0</span>
+                        <span class="stat-label">Warm-ups</span>
+                    </div>
+                    <div class="stat-card">
+                        <span class="stat-value" id="thisWeek">0</span>
+                        <span class="stat-label">This Week</span>
+                    </div>
+                    <div class="stat-card">
+                        <span class="stat-value" id="streak">0</span>
+                        <span class="stat-label">Day Streak</span>
+                    </div>
+                    <div class="stat-card">
+                        <span class="stat-value" id="totalExercises">0</span>
+                        <span class="stat-label">Exercises</span>
+                    </div>
+                    <div class="stat-card">
+                        <span class="stat-value" id="totalPRs">0</span>
+                        <span class="stat-label">PRs Set</span>
+                    </div>
+                </div>
+
+                <!-- Goal Progress -->
+                <div class="goal-section">
+                    <h4>🎯 Weekly Goal</h4>
+                    <div id="goalProgress"></div>
+                </div>
+
+                <!-- Progress Chart -->
+                <div class="chart-section">
+                    <h4>📈 Weekly Activity</h4>
+                    <div class="chart-container" id="weeklyChart"></div>
+                </div>
+
+                <!-- Personal Records -->
+                <div class="pr-section">
+                    <h4>🏆 Personal Records</h4>
+                    <div id="prList" class="pr-list"></div>
+                </div>
+
+                <h4>📜 Workout History</h4>
+                <div id="workoutHistory" class="workout-history"></div>
+
+                <button id="clearData" class="danger-btn">🗑️ Clear All Data</button>
+            </section>
+
+            <!-- Settings Tab -->
+            <section id="settings" class="tab-content">
+                <div class="section-header">
+                    <h2>⚙️ Settings</h2>
+                </div>
+
+                <div class="settings-group">
+                    <h4>🎨 Appearance</h4>
+                    <div class="setting-item">
+                        <span>Light Mode</span>
+                        <label class="toggle">
+                            <input type="checkbox" id="themeToggle">
+                            <span class="toggle-slider"></span>
+                        </label>
+                    </div>
+                </div>
+
+                <div class="settings-group">
+                    <h4>🔔 Notifications</h4>
+                    <div class="setting-item">
+                        <span>Workout Reminders</span>
+                        <label class="toggle">
+                            <input type="checkbox" id="reminderToggle">
+                            <span class="toggle-slider"></span>
+                        </label>
+                    </div>
+                    <div class="setting-item" id="reminderTimeContainer">
+                        <span>Reminder Time</span>
+                        <input type="time" id="reminderTime" value="09:00">
+                    </div>
+                </div>
+
+                <div class="settings-group">
+                    <h4>🔊 Sound Effects</h4>
+                    <div class="setting-item">
+                        <span>Timer Sounds</span>
+                        <label class="toggle">
+                            <input type="checkbox" id="soundToggle" checked>
+                            <span class="toggle-slider"></span>
+                        </label>
+                    </div>
+                </div>
+
+                <div class="settings-group">
+                    <h4>⏱️ Rest Timer Default</h4>
+                    <div class="setting-item">
+                        <span>Default Rest (seconds)</span>
+                        <select id="defaultRest">
+                            <option value="30">30s</option>
+                            <option value="60">60s</option>
+                            <option value="90" selected>90s</option>
+                            <option value="120">2 minutes</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="settings-group">
+                    <h4>🎯 Goals</h4>
+                    <div class="setting-item">
+                        <span>Weekly Workout Goal</span>
+                        <select id="weeklyGoal">
+                            <option value="3">3 days</option>
+                            <option value="4" selected>4 days</option>
+                            <option value="5">5 days</option>
+                            <option value="6">6 days</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="settings-group">
+                    <h4>🔀 Custom Workouts</h4>
+                    <button id="createCustomWorkout" class="primary-btn">➕ Create Custom Workout</button>
+                    <div id="customWorkoutsList" class="custom-workouts-list"></div>
+                </div>
+
+                <div class="settings-group">
+                    <h4>📤 Data Management</h4>
+                    <button id="exportAllData" class="secondary-btn">� Export All Data</button>
+                    <button id="importData" class="secondary-btn">📥 Import Data</button>
+                    <input type="file" id="importFile" accept=".json" class="hidden">
+                </div>
+            </section>
+        </main>
+
+        <!-- Custom Workout Builder Modal -->
+        <div id="customWorkoutModal" class="modal hidden">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h3>🔀 Create Custom Workout</h3>
+                    <button id="closeCustomWorkoutModal" class="close-modal">✕</button>
+                </div>
+                <div class="modal-body">
+                    <input type="text" id="customWorkoutName" placeholder="Workout Name (e.g., Arms Day)" class="modal-input">
+                    <div class="custom-exercise-selector">
+                        <h4>Select Exercises:</h4>
+                        <div id="customExerciseList" class="custom-exercise-list"></div>
+                    </div>
+                    <div id="selectedExercises" class="selected-exercises"></div>
+                </div>
+                <div class="modal-footer">
+                    <button id="saveCustomWorkout" class="primary-btn">💾 Save Workout</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Notes Modal -->
+        <div id="notesModal" class="modal hidden">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h3>📝 Exercise Notes</h3>
+                    <button id="closeNotesModal" class="close-modal">✕</button>
+                </div>
+                <div class="modal-body">
+                    <h4 id="notesExerciseName"></h4>
+                    <textarea id="notesTextarea" placeholder="Add form cues, tips, or reminders..."></textarea>
+                </div>
+                <div class="modal-footer">
+                    <button id="saveNoteBtn" class="primary-btn">💾 Save Notes</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- PR Modal -->
+        <div id="prModal" class="modal hidden">
+            <div class="modal-content pr-celebration">
+                <div class="pr-icon">🏆</div>
+                <h3>NEW PERSONAL RECORD!</h3>
+                <h4 id="prExerciseName"></h4>
+                <p id="prDetails"></p>
+                <button id="closePrModal" class="primary-btn">Awesome!</button>
+            </div>
+        </div>
+
+        <!-- Achievement Modal -->
+        <div id="achievementModal" class="modal hidden">
+            <div class="modal-content achievement-celebration">
+                <div class="achievement-icon" id="achievementIcon">🏅</div>
+                <h3>Achievement Unlocked!</h3>
+                <h4 id="achievementName"></h4>
+                <p id="achievementDesc"></p>
+                <button id="closeAchievementModal" class="primary-btn">Nice!</button>
+            </div>
+        </div>
+
+        <!-- Alternatives Modal -->
+        <div id="alternativesModal" class="modal hidden">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h3>🔄 Alternative Exercises</h3>
+                    <button id="closeAlternativesModal" class="close-modal">✕</button>
+                </div>
+                <div class="modal-body">
+                    <h4 id="alternativesExerciseName"></h4>
+                    <p>Equipment busy? Try these alternatives:</p>
+                    <div id="alternativesList" class="alternatives-list"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Offline Indicator -->
+        <div id="offlineIndicator" class="offline-indicator hidden">
+            📴 You're offline - Data will sync when connected
+        </div>
+    </div>
+
+    <!-- Audio for timer -->
+    <audio id="timerBeep" preload="auto">
+        <source src="data:audio/wav;base64,UklGRnoGAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YQoGAACBhYqFbF1fdH2Onp6Whn90Z2R0hZWgnpWFd2xobnuJlZqYj4F2bWxyfYmTl5WOgXZtbXJ9iZOXlY6BdW1tcn2Jk5eVjoF1bW1yfImTl5WOgXVtbHJ8iZOXlY6BdW1scXuJk5eVjoF1bWxxe4mTl5WPgXVtbHF7iZOXlY+BdW1scXuJk5aWj4F1bWxxe4mTlpaOgXVtbXF7iJOWlo6BdW1tcXuIk5aWjoF1bW1xe4iTlpaPgXVtbXF7iJOWlo+BdW1tcHuIk5aWj4F1bm1we4iTlpaPgnVubXB7iJOWlo+CdW5tcHuIkpaWj4J1bm1we4iSlpaPgnVubXB6iJKWlo+CdW5ucHqIkpaWj4J1bm5weYiSlpaPgnVubnB5iJKVlY+CdW5ucHmIkpWVj4J1bm5weYiSlZWPgnVubnB5iJKVlY+CdW9ucHmIkpWVj4J1b25weYeSlZWPg3VvbnB5h5KVlY+DdW9ub3mHkpWVj4N1b29veYeSlZWPg3VvbW95h5KVlY+DdW9tb3mHkpWVj4N1b21veIeSlZWPg3VvbW94h5GUlI+DdW9tb3iHkZSUj4N1b21veIeRlJSPg3Vvbm94h5GUlI+EdW9ub3iHkZSUj4R1b25vd4eRlJSPhHVvbm93h5GUlI+EdXBubneDkZSUkIR1cG5ud4ORlJSQhHVwbm53g5CUlJCEdXBubneDkJSUkIR1cG5udoOQk5OQhHVwbm52g5CTk5CEdXBubnaDkJOTkIR1cG9udoOQk5OQhXVwb252g5CTk5CFdXBvbnaDkJOTkIV1cG9udn+Qk5OQhXVwb252f5CTk5CFdXBvbnZ/kJOTkIV1cG9udn+Qk5OQhXVwb252f5CTk5CFdXFvbXZ/j5KSkYV1cW9tdn+PkpKRhXVxb212f4+SkpGFdXFvbXZ/j5KSkYV1cW9tdn+PkpKRhXVxb212fo+SkpGGdXFvbXZ+j5KRkYZ1cW9tdn6PkpGRhnVxb2x2fo+SkZGGdXFvbHZ+j5KRkYZ1cW9sdn6PkZGRhnVxcGx2fo+RkZGGdXFwbHZ+j5GRkYZ1cXBsdn6OkZGRhnVxcGx1fo6RkZGGdnFwbHV+jpGRkYZ2cXBsdX6OkZCQhnZxcGx1fo6RkJCGdnFwbHV+jpGQkIZ2cXBrdX6OkZCQhnZxcGt1fo6RkJCGdnFwa3V+jpCQkIZ2cXBrdX6OkJCQhnZxcGt1fo6QkJCGdnJwa3V+jpCQkId2cnBrdX6OkJCQh3ZycGt1fY6QkJCHdnJwa3V9jpCQkId2cnBrdX2Oj4+Ph3ZycGt1fY6Pj4+HdnJwa3R9jo+Pj4d2cnBrdH2Oj4+Ph3ZycGp0fY6Pj4+HdnNwanR9jo+Pj4d2c3BqdH2Oj4+Ph3Zzb2p0fY6Pj4+HdnNvanR9jo+Pj4d2c29qdH2Oj4+Ph3Zzb2p0fY6Ojo6Hd3NvanR9jo6Ojod3c29qdHyOjo6Oh3dzb2p0fI6Ojo6Hd3NvanR8jo6Ojod3c29pdHyOjo6Oh3dzb2l0fI6Ojo6Hd3NvaXR8jo6Ojod3c29pdHyNjo6Oh3d0b2l0fI2Ojo6Id3RvaXR8jY6OjYh3dG9pc3yNjo6NiHd0b2lzfI2NjY2Id3RvaXN8jY2NjYh3dG9pc3yNjY2NiHd0b2lzfI2NjY2Id3RvaHN8jY2NjYh3dG9oc3yNjY2NiHd0b2hzfI2NjY2Id3RvaHN8jY2NjYh3dW9oc3yNjY2NiHd1b2hzfI2NjY2Id3VuaHN8jY2NjYh3dW5oc3yMjY2NiHd1bmhze4yNjY2Id3VuaHN7jI2NjYh3dW5oc3uMjIyMiHd1bmhze4yMjIyId3VuaHN7jIyMjIh3dW5nc3uMjIyMiHd1bmdze4yMjIyId3ZuZ3N7jIyMjIh3dm5nc3uMjIyMiHd2bmdye4yMjIyId3ZuZ3J7jIyMjIh3dm5ncnuMjIyMiHd2bmdye4yMjIyId3ZuZ3J7jIyMjIl3dm5ncnuLjIyMiXd2bmdye4uMjIyJd3ZuZ3J7i4yMjIl3dm5mcnuLjIyMiXd2bmZye4uMjIyJd3ZuZnJ7i4uLi4l3dm5mcnuLi4uLiXd2bmZye4uLi4uJd3duZnJ7i4uLi4l3d25mcnuLi4uLiXd3bmZye4uLi4uJd3duZnJ7i4uLi4l3d25mcnqLi4uLiXd3bmZyeouLi4uJeHduZnJ6i4uLi4l4d25mcnqLi4uLiXh3bWZyeouLi4uJeHdtZnJ6i4uLi4l4d21mcXqLi4uLinh3bWZxeouLi4uKeHdtZnF6i4uLi4p4d21mcXqKi4uLinh3bWZxeoqLi4uKeHdtZnF6iouLi4p4d21mcXqKi4uLinh3bmVxeoqLi4uKeHhuZXF6ioqKiop4eG5lcXqKioqKinh4bmVxeoqKioqKeHhuZXF6ioqKiop4eG5lcXqKioqKinh4bmVxeoqKioqKeHhuZXB6ioqKiop4eG5lcHqKioqKinh4bmVweoqKioqKeXhuZXB6ioqKinl5eG5lcHqKioqKeXl4bmVweoqKiop5eXhuZXB6ioqKinl5eG5lcHqJioqKeXl4bmVweoqKioqKeXl4bmVweoqKioqKeXl4bmVweoqKioqKeXl5bmVweoqKioqKeXl5bmRweoqJioqKeXl5bmRweoqJiYqKeXl5bmRweoqJiYqKeXl5bmRweYqJiYqKeXl5bmRweYqJiYqKeXl5bmRweYqJiYqKeXl5bmRweYmJiYqKeXl5bmRweYmJiYqKeXl5bmRweYmJiYqKeXl5bmRweYmJiYqKeXl5bmRweYmJiYqK" type="audio/wav">
+    </audio>
+
+    <script src="js/app.js"></script>
+</body>
+</html>
