@@ -2,21 +2,21 @@
     "name": "Gym Plan - Workout Tracker",
     "short_name": "Gym Plan",
     "description": "Track your gym workouts and plan your fitness journey",
-    "start_url": "/",
+    "start_url": "./",
     "display": "standalone",
     "background_color": "#1a1a2e",
     "theme_color": "#6366f1",
     "orientation": "portrait-primary",
-    "scope": "/",
+    "scope": "./",
     "icons": [
         {
-            "src": "icons/icon-72.png",
+            "src": "./icons/icon-72.png",
             "sizes": "72x72",
             "type": "image/png",
             "purpose": "maskable any"
         },
         {
-            "src": "icons/icon.svg",
+            "src": "./icons/icon.svg",
             "sizes": "any",
             "type": "image/svg+xml",
             "purpose": "any"
@@ -28,15 +28,15 @@
             "name": "Start Workout",
             "short_name": "Workout",
             "description": "Start a new workout session",
-            "url": "/?action=workout",
-            "icons": [{ "src": "icons/icon-72.png", "sizes": "72x72" }]
+            "url": "./?action=workout",
+            "icons": [{ "src": "./icons/icon-72.png", "sizes": "72x72" }]
         },
         {
             "name": "View Progress",
             "short_name": "Progress",
             "description": "View your workout progress",
-            "url": "/?action=progress",
-            "icons": [{ "src": "icons/icon-72.png", "sizes": "72x72" }]
+            "url": "./?action=progress",
+            "icons": [{ "src": "./icons/icon-72.png", "sizes": "72x72" }]
         }
     ]
 }
