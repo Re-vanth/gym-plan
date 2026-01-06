@@ -1,12 +1,12 @@
-const CACHE_NAME = 'gym-plan-v2';
+const CACHE_NAME = 'gym-plan-v3';
 const ASSETS_TO_CACHE = [
-    '/',
-    '/index.html',
-    '/css/style.css',
-    '/js/app.js',
-    '/manifest.json',
-    '/icons/icon-72.png',
-    '/icons/icon.svg'
+    './',
+    './index.html',
+    './css/style.css',
+    './js/app.js',
+    './manifest.json',
+    './icons/icon-72.png',
+    './icons/icon.svg'
 ];
 
 // Install event - cache assets
