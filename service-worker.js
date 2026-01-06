@@ -1,4 +1,4 @@
-const CACHE_NAME = 'gym-plan-v3';
+const CACHE_NAME = 'gym-plan-v4';
 const ASSETS_TO_CACHE = [
     './',
     './index.html',
@@ -63,7 +63,7 @@ self.addEventListener('fetch', (event) => {
                     .catch(() => {
                         // Return offline page for navigation requests
                         if (event.request.mode === 'navigate') {
-                            return caches.match('/index.html');
+                            return caches.match('./index.html');
                         }
                     });
             })
@@ -86,8 +86,8 @@ async function syncWorkouts() {
 self.addEventListener('push', (event) => {
     const options = {
         body: event.data ? event.data.text() : 'Time for your workout!',
-        icon: '/icons/icon-192.png',
-        badge: '/icons/icon-72.png',
+        icon: './icons/icon-72.png',
+        badge: './icons/icon-72.png',
         vibrate: [100, 50, 100],
         data: {
             dateOfArrival: Date.now(),
@@ -109,7 +109,7 @@ self.addEventListener('notificationclick', (event) => {
 
     if (event.action === 'start') {
         event.waitUntil(
-            clients.openWindow('/?action=workout')
+            clients.openWindow('./?action=workout')
         );
     }
 });
